@@ -612,6 +612,8 @@ module OmniAuth
       def encoded_post_logout_redirect_uri
         return nil unless options.post_logout_redirect_uri
 
+        binding.pry
+
         # post_logout_redirect_uri を指定する場合は, id_token_hint 必須.
         URI.encode_www_form(
           id_token_hint: params['id_token'],
