@@ -259,8 +259,7 @@ module OmniAuth
       def setup_phase
         super
         raise TypeError unless options.issuer.is_a?(String)
-        unless (uri = URI.parse(options.issuer)) &&
-            %w[http https].include?(uri.scheme)
+        unless (uri = URI.parse(options.issuer)) && %w[http https].include?(uri.scheme)
           raise ArgumentError, 'Invalid issuer URI scheme'
         end
         @issuer = options.issuer
@@ -284,8 +283,7 @@ module OmniAuth
         end
         if configured_response_type == 'id_token token'
           if client_options.secret
-            raise ArgumentError,
-                  'MUST NOT set client_secret on the Implicit Flow'
+            raise ArgumentError, 'MUST NOT set client_secret on the Implicit Flow'
           end
         end
       end
@@ -541,21 +539,13 @@ module OmniAuth
 
         # 鍵を選ぶ。"{ヘッダ部}.{ペイロード部}.{シグネチャ部}" と、ピリオドで
         # 区切られている。ヘッダ部にアルゴリズムが書かれている.
-        header =
-          (
-            JSON::JWS.decode_compact_serialized @access_token.id_token,
-                                                :skip_verification
-          ).header
+        header = (JSON::JWS.decode_compact_serialized @access_token.id_token, :skip_verification).header
 
         # header = ::JWT.decoded_segments(actoken.id_token, false)[0]
         key = key_or_secret header
 
         # このなかで署名の検証も行う. => JSON::JWS::VerificationFailed
-        id_token =
-          ::OpenIDConnect::ResponseObject::IdToken.decode(
-            @access_token.id_token,
-            key
-          )
+        id_token = ::OpenIDConnect::ResponseObject::IdToken.decode(@access_token.id_token, key)
         verify_id_token!(id_token)
 
         @id_token = id_token
@@ -624,7 +614,7 @@ module OmniAuth
 
         # post_logout_redirect_uri を指定する場合は, id_token_hint 必須.
         URI.encode_www_form(
-          id_token_hint: access_token.params['id_token_hint'],
+          id_token_hint: @access_token.token_id,
           post_logout_redirect_uri: options.post_logout_redirect_uri
         )
       end
@@ -647,8 +637,7 @@ module OmniAuth
       # (2) access token を id_token によって検証しなければならない.
       def implicit_flow_callback_phase
         if !params['access_token'] || !params['id_token']
-          raise OmniAuth::OpenIDConnect::MissingIdTokenError,
-                "Missing 'access_token' or 'id_token' param"
+          raise OmniAuth::OpenIDConnect::MissingIdTokenError, "Missing 'access_token' or 'id_token' param"
         end
 
         # このなかで署名の検証も行う. => JSON::JWS::VerificationFailed
