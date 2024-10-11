@@ -614,7 +614,7 @@ module OmniAuth
 
         # post_logout_redirect_uri を指定する場合は, id_token_hint 必須.
         URI.encode_www_form(
-          id_token_hint: @access_token.token_id,
+          id_token_hint: params['id_token'],
           post_logout_redirect_uri: options.post_logout_redirect_uri
         )
       end
