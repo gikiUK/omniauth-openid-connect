@@ -624,7 +624,7 @@ module OmniAuth
 
         # post_logout_redirect_uri を指定する場合は, id_token_hint 必須.
         URI.encode_www_form(
-          id_token_hint: access_token.id_token,
+          id_token_hint: access_token.params['id_token_hint'],
           post_logout_redirect_uri: options.post_logout_redirect_uri
         )
       end
@@ -668,9 +668,7 @@ module OmniAuth
           id_token,
           params['id_token']
         )
-        @access_token =
-          ::OpenIDConnect::AccessToken.new client: client,
-                                           access_token: params['access_token']
+        @access_token = ::OpenIDConnect::AccessToken.new client: client, access_token: params['access_token']
       end
 
       def configured_response_type
